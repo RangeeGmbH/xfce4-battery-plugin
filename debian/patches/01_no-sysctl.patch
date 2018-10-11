@@ -1,0 +1,17 @@
+--- a/panel-plugin/libacpi.c
++++ b/panel-plugin/libacpi.c
+@@ -51,11 +51,12 @@ static int      acpifd;
+ #endif
+ 
+ #include <sys/sysctl.h>
+-#include <err.h>
+-#include <errno.h>
+ 
+ #endif
+ 
++#include <err.h>
++#include <errno.h>
++
+ #include "libacpi.h"
+ 
+ #define ACBASE "/proc/acpi/ac_adapter"
