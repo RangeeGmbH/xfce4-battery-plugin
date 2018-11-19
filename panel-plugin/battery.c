@@ -134,10 +134,10 @@ static gboolean battmon_set_size(XfcePanelPlugin *plugin, int size, t_battmon *b
 static void
 init_options(t_battmon_options *options)
 {
-    options->display_icon = FALSE;
+    options->display_icon = TRUE;
     options->display_label = FALSE;
     options->display_power = FALSE;
-    options->display_percentage = TRUE;
+    options->display_percentage = FALSE;
     options->display_bar = TRUE;
     options->display_time = FALSE;
     options->tooltip_display_percentage = FALSE;
