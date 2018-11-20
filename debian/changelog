@@ -2,7 +2,7 @@ xfce4-battery-plugin (1.1.0-2rangeeos1) rangeeos; urgency=medium
 
   * Patched files for RangeeOS
 
- -- Benajmin Manteufel <bmanteufel@rangee.com>  Fri, 12 Oct 2018 09:08:41 +0200
+ -- Benjamin Manteufel <bmanteufel@rangee.com>  Fri, 12 Oct 2018 09:08:41 +0200
 
 xfce4-battery-plugin (1.1.0-1) unstable; urgency=medium
 
