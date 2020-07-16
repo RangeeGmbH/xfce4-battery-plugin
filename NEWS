@@ -1,3 +1,30 @@
+1.1.3 (2019/09/13):
+===================
+* Fix some warnings reported by Clang (Bug #15037)
+* Avoid unnecessary strdup (Bug #15196)
+* Replace GtkStock buttons
+* New translation for hy_AM
+* Lots of other translations updates
+
+1.1.2 (2019/01/13):
+===================
+* Listen for UPower events for power source changes (Bug #14978, thanks to Alexander Butenko)
+* Reset averages when a battery is removed/added (Bug #14930, thanks to John Lindgren)
+* Re-detect battery presence every 30 seconds (Bug #14930, thanks to John Lindgren)
+* Fix null pointer dereference with no battery present (Bug #14930, thanks to John Lindgren)
+* Remove deprecated /proc/acpi support in favor of sysfs. (Thanks to John Lindgren)
+* Remove APM support on FreeBSD as well, it doesn't even build. (Thanks to John Lindgren)
+* Remove historical APM support for Linux, support ACPI only. (Thanks to John Lindgren)
+* Initially show/hide widgets according to user config (Bug #9594, thanks to John Lindgren)
+
+1.1.1 (2018/09/22):
+===================
+* Avoid memory leaks
+* Bump to minimal Gtk to 3.16
+* Only set progressbar width or height depending on the orientation (Bug #12942)
+* Create a single GtkCssProvider in setup_battmon() (Bug #12975)
+* Improved spacing and layout in dialogs (Bug #14659)
+
 1.1.0 (2016/11/01):
 ===================
 * Fix progressbar css styling with Gtk 3.20
@@ -16,6 +43,7 @@
 1.0.4 (2012/05/14):
 ===================
 * Fix compilation with panel version < 4.9
+
 1.0.3 (2012/05/13):
 ===================
 * Improve plugin UI in vertical/deskbar/multirows panels
@@ -41,19 +69,11 @@
 
 1.0.0 (2011/01/03):
 ===================
-
 * Translated in 15 more languages, for a total of 38
-
 * Make the warning messages non modal, fixing bug #3008
-
 * Fix fan and temperature detection, fixing bug #2884
-
 * Showing "No battery, AC online" when no battery is inserted
-
 * Fix compilation on OpenBSD
-
 * Fix compilation on amd64 FreeBSD, fixing bug #3811
-
 * Fix compile issue on linux, fixing bug #3938
-
 * Various other small compile fixes and cleanup

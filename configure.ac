@@ -9,7 +9,7 @@ dnl 2003      Benedikt Meurer <benny@xfce.org>
 dnl 2006-2007 Nick Schermer <nick@xfce.org>
 dnl 2010      Florian Rivoal <frivoal@xfce.org>
 dnl 2012      Landry Breuil <landry@xfce.org>
-dnl 2016      Andre Miranda <andre42m@gmail.com>
+dnl 2016-2019 Andre Miranda <andreldm@xfce.org>
 dnl
 
 dnl ***************************
@@ -17,17 +17,16 @@ dnl *** Version information ***
 dnl ***************************
 m4_define([battery_version_major], [1])
 m4_define([battery_version_minor], [1])
-m4_define([battery_version_micro], [0])
-m4_define([battery_version_build], [r4b8a4b2])
+m4_define([battery_version_micro], [3])
+m4_define([battery_version_build], [r209bb86])
 m4_define([battery_version_tag], [])
 m4_define([battery_version], [battery_version_major().battery_version_minor().battery_version_micro()ifelse(battery_version_tag(), [svn], [battery_version_tag()-battery_version_build()], [battery_version_tag()])])
 
 dnl ***************************
 dnl *** Initialize autoconf ***
 dnl ***************************
-AC_COPYRIGHT([Copyright (c) 2006-2016
-        The Xfce development team. All rights reserved.])
-AC_INIT([xfce4-battery-plugin], [battery_version], [http://bugzilla.xfce.org/], [xfce4-battery-plugin])
+AC_COPYRIGHT([Copyright (c) 2006-2019 The Xfce development team. All rights reserved.])
+AC_INIT([xfce4-battery-plugin], [battery_version], [https://bugzilla.xfce.org/], [xfce4-battery-plugin])
 AC_PREREQ([2.50])
 AC_CANONICAL_TARGET()
 
@@ -37,6 +36,7 @@ dnl ***************************
 AM_INIT_AUTOMAKE([1.8 dist-bzip2 tar-ustar no-dist-gzip])
 AM_CONFIG_HEADER([config.h])
 AM_MAINTAINER_MODE()
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 dnl ********************************
 dnl *** Check for basic programs ***
@@ -64,15 +64,16 @@ AC_CHECK_FUNCS([sysctl])
 dnl ******************************
 dnl *** Check for i18n support ***
 dnl ******************************
-XDT_I18N([ar ast bg ca cs da de el en_AU en_GB es eu fi fr gl he hr hu id is it ja kk ko lt lv ms nb nl nn oc pa pl pt pt_BR ru sk sl sq sr sv th tr ug uk ur ur_PK uz uz@Latn vi zh_CN zh_TW ])
+XDT_I18N([ar ast be bg ca cs da de el en_AU en_GB es eu fi fr gl he hr hu hy_AM id is it ja kk ko lt lv ms nb nl nn oc pa pl pt pt_BR ru sk sl sq sr sv th tr ug uk ur ur_PK uz uz@Latn vi zh_CN zh_TW ])
 
 dnl ***********************************
 dnl *** Check for required packages ***
 dnl ***********************************
-XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [3.14.0])
+XDT_CHECK_PACKAGE([GTK], [gtk+-3.0], [3.16.0])
 XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.8.0])
 XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-2], [4.12.0])
 XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-2.0], [4.12.0])
+XDT_CHECK_PACKAGE([GIO_UNIX], [gio-2.0], [2.28.0])
 
 dnl ***********************************
 dnl *** Check for debugging support ***
