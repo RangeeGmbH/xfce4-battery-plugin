@@ -17,8 +17,8 @@ dnl *** Version information ***
 dnl ***************************
 m4_define([battery_version_major], [1])
 m4_define([battery_version_minor], [1])
-m4_define([battery_version_micro], [3])
-m4_define([battery_version_build], [r209bb86])
+m4_define([battery_version_micro], [4])
+m4_define([battery_version_build], [r685055f])
 m4_define([battery_version_tag], [])
 m4_define([battery_version], [battery_version_major().battery_version_minor().battery_version_micro()ifelse(battery_version_tag(), [svn], [battery_version_tag()-battery_version_build()], [battery_version_tag()])])
 
@@ -33,8 +33,8 @@ AC_CANONICAL_TARGET()
 dnl ***************************
 dnl *** Initialize automake ***
 dnl ***************************
-AM_INIT_AUTOMAKE([1.8 dist-bzip2 tar-ustar no-dist-gzip])
-AM_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE([1.8 dist-bzip2 tar-ustar no-dist-gzip foreign])
+AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE()
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
@@ -64,7 +64,7 @@ AC_CHECK_FUNCS([sysctl])
 dnl ******************************
 dnl *** Check for i18n support ***
 dnl ******************************
-XDT_I18N([ar ast be bg ca cs da de el en_AU en_GB es eu fi fr gl he hr hu hy_AM id is it ja kk ko lt lv ms nb nl nn oc pa pl pt pt_BR ru sk sl sq sr sv th tr ug uk ur ur_PK uz uz@Latn vi zh_CN zh_TW ])
+XDT_I18N([])
 
 dnl ***********************************
 dnl *** Check for required packages ***
@@ -80,7 +80,7 @@ dnl *** Check for debugging support ***
 dnl ***********************************
 XDT_FEATURE_DEBUG()
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 panel-plugin/Makefile
 icons/Makefile
@@ -91,6 +91,8 @@ icons/32x32/Makefile
 icons/scalable/Makefile
 po/Makefile.in
 ])
+AC_OUTPUT
+
 dnl ***************************
 dnl *** Print configuration ***
 dnl ***************************

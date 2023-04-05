@@ -56,7 +56,7 @@
 #define LOW_COLOR       "#ffff00"
 #define CRITICAL_COLOR  "#ff0000"
 #define AVERAGING_CYCLE 5
-#define PLUGIN_WEBSITE  "https://goodies.xfce.org/projects/panel-plugins/xfce4-battery-plugin"
+#define PLUGIN_WEBSITE  "https://docs.xfce.org/panel-plugins/xfce4-battery-plugin"
 
 typedef struct
 {
@@ -86,7 +86,6 @@ typedef struct
     XfcePanelPlugin *plugin;
 
     GtkWidget         *ebox, *timechargebox, *actempbox;
-    GtkWidget         *timechargealignment, *actempalignment;
     GtkWidget         *battstatus;
     int                timeoutid; /* To update apm status */
     gboolean           low;
@@ -154,7 +153,7 @@ init_options(t_battmon_options *options)
     gdk_rgba_parse(&(options->colorC), CRITICAL_COLOR);
 }
 
-static gboolean
+static void
 update_apm_status(t_battmon *battmon)
 {
     int method = BM_BROKEN;
@@ -192,9 +191,9 @@ update_apm_status(t_battmon *battmon)
     int fd;
 
     fd = open(APMDEVICE, O_RDONLY);
-    if (fd == -1) return TRUE;
+    if (fd == -1) return;
     if (ioctl(fd, APM_IOC_GETPOWER, &apm) == -1)
-        return TRUE;
+        return;
     close(fd);
     charge = apm.battery_life;
     time_remaining = apm.minutes_left;
@@ -317,7 +316,7 @@ update_apm_status(t_battmon *battmon)
 
     if (battmon->options.display_percentage && charge > 0 && !(battmon->options.hide_when_full && acline && charge >= 99)) {
         gtk_widget_show(GTK_WIDGET(battmon->charge));
-        gtk_widget_show(GTK_WIDGET(battmon->timechargealignment));
+        gtk_widget_show(GTK_WIDGET(battmon->timechargebox));
         g_snprintf(buffer, sizeof(buffer),"%d%% ", charge);
         gtk_label_set_text(battmon->charge,buffer);
     } else {
@@ -326,7 +325,7 @@ update_apm_status(t_battmon *battmon)
 
     if (battmon->options.display_time && time_remaining > 0 && !(battmon->options.hide_when_full && acline && charge >= 99 )) {
         gtk_widget_show(GTK_WIDGET(battmon->rtime));
-        gtk_widget_show(GTK_WIDGET(battmon->timechargealignment));
+        gtk_widget_show(GTK_WIDGET(battmon->timechargebox));
         g_snprintf(buffer, sizeof(buffer),"%02d:%02d ",time_remaining/60,time_remaining%60);
         gtk_label_set_text(battmon->rtime,buffer);
 
@@ -335,7 +334,7 @@ update_apm_status(t_battmon *battmon)
     }
 
     if ((!battmon->options.display_time && !battmon->options.display_percentage) || (battmon->options.hide_when_full && acline && charge >= 99 )) {
-        gtk_widget_hide(GTK_WIDGET(battmon->timechargealignment));
+        gtk_widget_hide(GTK_WIDGET(battmon->timechargebox));
     }
 
     if (acline) {
@@ -368,7 +367,7 @@ update_apm_status(t_battmon *battmon)
     if (battmon->options.display_power) {
         gtk_widget_show(GTK_WIDGET(battmon->acfan));
         gtk_widget_show(GTK_WIDGET(battmon->temp));
-        gtk_widget_show_all(GTK_WIDGET(battmon->actempalignment));
+        gtk_widget_show_all(GTK_WIDGET(battmon->actempbox));
 
         fan=get_fan_status();
         if (acline && fan)
@@ -393,7 +392,7 @@ update_apm_status(t_battmon *battmon)
     } else {
         gtk_widget_hide(GTK_WIDGET(battmon->acfan));
         gtk_widget_hide(GTK_WIDGET(battmon->temp));
-        gtk_widget_hide(GTK_WIDGET(battmon->actempalignment));
+        gtk_widget_hide(GTK_WIDGET(battmon->actempbox));
     }
 
     gtk_progress_bar_set_text(GTK_PROGRESS_BAR(battmon->battstatus), NULL);
@@ -446,7 +445,7 @@ do_critical_warn:
                     _("WARNING: Your battery has reached critical status. You should plug in or shutdown your computer now to avoid possible data loss."));
                 g_signal_connect_swapped (dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
                 gtk_widget_show_all (dialog);
-                return TRUE;
+                return;
             }
 
             if (battmon->options.action_on_critical == BM_COMMAND ||
@@ -465,7 +464,7 @@ do_low_warn:
                 _("WARNING: Your battery is running low. You should consider plugging in or shutting down your computer soon to avoid possible data loss."));
                 g_signal_connect_swapped (dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
                 gtk_widget_show_all (dialog);
-                return TRUE;
+                return;
             }
 
             if (battmon->options.action_on_low == BM_COMMAND ||
@@ -477,8 +476,6 @@ do_low_warn:
             }
         }
     }
-
-    return TRUE;
 }
 
 static void
@@ -518,14 +515,8 @@ setup_battmon(t_battmon *battmon)
     /* percent + rtime */
     /* create the label hvbox with an orientation opposite to the panel */
     battmon->timechargebox = gtk_box_new(!xfce_panel_plugin_get_orientation(battmon->plugin), 0);
-
-    /* Should be removed(was a GtkAligment)? */
-    battmon->timechargealignment = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_halign(GTK_WIDGET(battmon->timechargealignment), GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(GTK_WIDGET(battmon->timechargealignment), GTK_ALIGN_CENTER);
-
-    gtk_container_add (GTK_CONTAINER(battmon->timechargealignment), battmon->timechargebox);
-    gtk_box_pack_start(GTK_BOX(battmon->ebox), battmon->timechargealignment, FALSE, FALSE, 2);
+    gtk_box_set_homogeneous(GTK_BOX(battmon->timechargebox), TRUE);
+    gtk_box_pack_start(GTK_BOX(battmon->ebox), battmon->timechargebox, FALSE, FALSE, 0);
 
     battmon->charge = (GtkLabel *)gtk_label_new("--");
     gtk_box_pack_start(GTK_BOX(battmon->timechargebox),GTK_WIDGET(battmon->charge),TRUE, TRUE, 0);
@@ -536,14 +527,8 @@ setup_battmon(t_battmon *battmon)
     /* ac-fan-temp */
     /* create the label hvbox with an orientation opposite to the panel */
     battmon->actempbox = gtk_box_new(!xfce_panel_plugin_get_orientation(battmon->plugin), 0);
-
-    /* Should be removed(was a GtkAligment)? */
-    battmon->actempalignment = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_halign(GTK_WIDGET(battmon->actempalignment), GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(GTK_WIDGET(battmon->actempalignment), GTK_ALIGN_CENTER);
-
-    gtk_container_add (GTK_CONTAINER(battmon->actempalignment), battmon->actempbox);
-    gtk_box_pack_start(GTK_BOX(battmon->ebox), battmon->actempalignment, FALSE, FALSE, 2);
+    gtk_box_set_homogeneous(GTK_BOX(battmon->timechargebox), TRUE);
+    gtk_box_pack_start(GTK_BOX(battmon->ebox), battmon->actempbox, FALSE, FALSE, 0);
 
     battmon->acfan = (GtkLabel *)gtk_label_new("--");
     gtk_box_pack_start(GTK_BOX(battmon->actempbox),GTK_WIDGET(battmon->acfan),TRUE, TRUE, 0);
@@ -561,7 +546,7 @@ setup_battmon(t_battmon *battmon)
     if (!battmon->options.display_power) {
         gtk_widget_hide(GTK_WIDGET(battmon->acfan));
         gtk_widget_hide(GTK_WIDGET(battmon->temp));
-        gtk_widget_hide(GTK_WIDGET(battmon->actempalignment));
+        gtk_widget_hide(GTK_WIDGET(battmon->actempbox));
     }
     if (!battmon->options.display_percentage) {
         gtk_widget_hide(GTK_WIDGET(battmon->charge));
@@ -570,7 +555,7 @@ setup_battmon(t_battmon *battmon)
         gtk_widget_hide(GTK_WIDGET(battmon->rtime));
     }
     if (!battmon->options.display_time && !battmon->options.display_percentage) {
-        gtk_widget_hide(GTK_WIDGET(battmon->timechargealignment));
+        gtk_widget_hide(GTK_WIDGET(battmon->timechargebox));
     }
 
     gtk_widget_set_size_request(battmon->ebox, -1, -1);
@@ -1096,9 +1081,16 @@ battmon_dialog_response (GtkWidget *dlg, int response, t_battmon *battmon)
     }
     else
     {
-        gtk_widget_destroy (dlg);
-        xfce_panel_plugin_unblock_menu (battmon->plugin);
-        battmon_write_config (battmon->plugin, battmon);
+        if (response == GTK_RESPONSE_HELP)
+        {
+            xfce_dialog_show_help (GTK_WINDOW (dlg), PACKAGE_NAME, NULL, NULL);
+        }
+        else
+        {
+            gtk_widget_destroy (dlg);
+            xfce_panel_plugin_unblock_menu (battmon->plugin);
+            battmon_write_config (battmon->plugin, battmon);
+        }
     }
 }
 
@@ -1120,11 +1112,10 @@ battmon_create_options(XfcePanelPlugin *plugin, t_battmon *battmon)
     dlg = xfce_titled_dialog_new_with_mixed_buttons(_("Battery Monitor"),
         GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
         GTK_DIALOG_DESTROY_WITH_PARENT,
-        "help-browser", _("_Help"), GTK_RESPONSE_HELP,
         "window-close", _("_Close"), GTK_RESPONSE_OK,
+        "help-browser", _("_Help"), GTK_RESPONSE_HELP,
         NULL);
 
-    xfce_titled_dialog_set_subtitle(XFCE_TITLED_DIALOG(dlg), _("Properties"));
     gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER);
     gtk_window_set_icon_name(GTK_WINDOW(dlg), "xfce4-battery-plugin");
 
@@ -1397,7 +1388,7 @@ battmon_show_about(XfcePanelPlugin *plugin, t_battmon *battmon)
         "version", PACKAGE_VERSION,
         "program-name", PACKAGE_NAME,
         "comments", _("Show and monitor the battery status"),
-        "website", "https://goodies.xfce.org/projects/panel-plugins/xfce4-battery-plugin",
+        "website", "https://docs.xfce.org/panel-plugins/xfce4-battery-plugin",
         "copyright", _("Copyright (c) 2003-2019\n"),
         "authors", auth, NULL);
 
@@ -1430,6 +1421,14 @@ battmon_dbus_monitor(t_battmon *battmon)
     g_return_if_fail(proxy != NULL);
 
     g_signal_connect(proxy, "g-properties-changed", G_CALLBACK(on_power_change), battmon);
+}
+
+static gboolean
+update_apm_status_cb(gpointer user_data)
+{
+    t_battmon *battmon = user_data;
+    update_apm_status(battmon);
+    return TRUE;
 }
 
 /* create the plugin */
@@ -1472,7 +1471,7 @@ battmon_construct(XfcePanelPlugin *plugin)
 
     /* Update battery status every 30 seconds */
     if (battmon->timeoutid == 0)
-        battmon->timeoutid = g_timeout_add_seconds(30,(GSourceFunc) update_apm_status, battmon);
+        battmon->timeoutid = g_timeout_add_seconds(30, update_apm_status_cb, battmon);
 
     /* Update battery status on UPower events like power cord connected, disconnected, lid opened */
     battmon_dbus_monitor(battmon);

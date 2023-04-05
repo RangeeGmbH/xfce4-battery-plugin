@@ -1,3 +1,0 @@
-version=3
-https://archive.xfce.org/src/panel-plugins/xfce4-battery-plugin/([\d\.]+)/ \
-	xfce4-battery-plugin-([\d\.]+)\.tar\.(?:gz|bz2)

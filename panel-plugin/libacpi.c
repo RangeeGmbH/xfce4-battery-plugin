@@ -43,7 +43,7 @@ static int      acpifd;
 #define UNKNOWN_VOLTAGE 0xffffffff
 #endif
 
-#if HAVE_SYSCTL
+#ifdef HAVE_SYSCTL
 
 #if defined(__NetBSD__) || defined (__OpenBSD__)
 #include <sys/param.h>
@@ -54,10 +54,10 @@ static int      acpifd;
 
 #ifndef __linux__
 #include <sys/sysctl.h>
-#endif
-
 #include <err.h>
 #include <errno.h>
+#endif
+
 #endif
 
 #include "libacpi.h"
